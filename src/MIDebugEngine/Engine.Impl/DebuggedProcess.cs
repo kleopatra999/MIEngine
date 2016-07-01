@@ -189,7 +189,7 @@ namespace Microsoft.MIDebugEngine
                 // For local Linux and OS X launch, use the local Unix transport which creates a new terminal and
                 // uses fifos for debugger (e.g., gdb) communication.
                 if (this.MICommandFactory.UseExternalConsoleForLocalLaunch(localLaunchOptions) &&
-                    (PlatformUtilities.IsLinux() || PlatformUtilities.IsOSX())
+                    (PlatformUtilities.IsLinux() || (PlatformUtilities.IsOSX() && localLaunchOptions.DebuggerMIMode == MIMode.Gdb))
                     )
                 {
                     localTransport = new LocalUnixTerminalTransport();
@@ -656,7 +656,7 @@ namespace Microsoft.MIDebugEngine
                     }
 
                     if (localLaunchOptions != null &&
-                        PlatformUtilities.IsWindows() &&
+                        (PlatformUtilities.IsWindows() || (PlatformUtilities.IsOSX() && this.MICommandFactory.Mode == MIMode.Lldb)) &&
                         this.MICommandFactory.UseExternalConsoleForLocalLaunch(localLaunchOptions))
                     {
                         commands.Add(new LaunchCommand("-gdb-set new-console on", ignoreFailures: true));
