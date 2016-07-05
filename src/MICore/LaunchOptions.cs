@@ -71,7 +71,7 @@ namespace MICore
             this.PipePath = pipePath;
             this.PipeArguments = pipeArguments;
             this.PipeCommandArguments = pipeCommandArguments;
-            
+
             if (!String.IsNullOrWhiteSpace(pipeCwd))
             {
                 this.PipeCwd = pipeCwd;
@@ -112,7 +112,7 @@ namespace MICore
         /// [Optional] Current working directory when the pipe program is invoked.
         /// </summary>
         public string PipeCwd { get; private set; }
-        
+
         /// <summary>
         /// [Optional] Enviroment variables for the pipe program.
         /// </summary>
@@ -287,6 +287,27 @@ namespace MICore
                 throw new ArgumentException(String.Format(CultureInfo.CurrentCulture, MICoreResources.Error_InvalidLocalExePath, options.CoreDumpPath));
 
             return options;
+        }
+
+        /// <summary>
+        /// Returns the Extension folder or null if it can't be computed 
+        /// </summary>
+        /// <returns></returns>
+        private static string ResolveExtensionPath()
+        {
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            string directory = Path.GetDirectoryName(assembly.Location);
+            string[] dir = directory.Split(Path.DirectorySeparatorChar);
+            if (dir.Length > 3)
+            {
+                int dirCount = dir.Length;
+                // Remove the debugAdapter and bin directories
+                int length = 2 + dir[dirCount - 1].Length + dir[dirCount - 2].Length;
+
+                return directory.Substring(0, directory.Length - length);
+            }
+
+            return null;
         }
 
         private static string ResolveFromPath(string command)
